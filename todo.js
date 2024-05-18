@@ -16,59 +16,54 @@ function todoMain() {
 	}
 
 	function addListeners() {
-		button.addEventListener("click", onChange, false);
+		button.addEventListener("click", addEntry, false);
 	}
 
-	function onChange(event) {
-		let flag = true;
-
+	function addEntry(event) {
+		
 		let inputValue = inputElem.value;
-
-		// This allows html injection
-		// ulElem.innerHTML += `<li>${inputValue}</li>`;
 		inputElem.value = "";
-
 		let inputValue2 = inputElem2.value;
 		inputElem2.value = "";
 
-		let liElem = document.createElement("li");
+		// Add a new row
+		let table = document.getElementById("todoTable");
+		let trElem = document.createElement("tr");
+		table.appendChild(trElem);
 
+		// checkbox cell
 		let checkboxElem = document.createElement("input");
 		checkboxElem.type = "checkbox";
-		liElem.appendChild(checkboxElem);
+		checkboxElem.addEventListener("click", done, false);
+		let tdElem1 = document.createElement("td");
+		tdElem1.appendChild(checkboxElem);
+		trElem.appendChild(tdElem1);
 
-		let textElem = document.createElement("span");
-		textElem.innerText = inputValue + " - " + inputValue2;
-		liElem.appendChild(textElem);
+		// to-do cell
+		let tdElem2 = document.createElement("td");
+		tdElem2.innerText = inputValue;
+		trElem.appendChild(tdElem2);
 
-		// liElem.innerText = inputValue;
-		// liElem.addEventListener("click", onClick, false);
+		// category cell
+		let tdElem3 = document.createElement("td");
+		tdElem3.innerText = inputValue2;
+		trElem.appendChild(tdElem3);
 
+		// delete cell
 		let spanElem = document.createElement("span");
 		spanElem.innerText = "delete";
 		spanElem.className = "material-symbols-outlined";
-
 		spanElem.addEventListener("click", deleteItem, false);
-
-		liElem.appendChild(spanElem);
-
-		ulElem.appendChild(liElem);
+		let tdElem4 = document.createElement("td");
+		tdElem4.appendChild(spanElem);
+		trElem.appendChild(tdElem4);
 
 		function deleteItem() {
-			liElem.remove();
+			trElem.remove();
 		}
 
-		function onClick() {
-			if (flag) {
-				// this.style.textDecoration = "line-through";
-				this.classList.add("strike");
-				flag = !flag;
-			} else {
-				// this.style.textDecoration = "none";
-				this.classList.remove("strike");
-				flag = !flag;
-			}
-			
+		function done() {
+			trElem.classList.toggle("strike");
 		}
 	}
 }
