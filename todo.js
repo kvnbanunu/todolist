@@ -1,17 +1,22 @@
 todoMain();
 
 function todoMain() {
-	let inputElem, ulElem;
+	let inputElem,
+		inputElem2,
+		button,
+		ulElem;
 	getElements();
 	addListeners();
 
 	function getElements() {
 		inputElem = document.getElementsByTagName("input")[0];
+		inputElem2 = document.getElementsByTagName("input")[1];
+		button = document.getElementById("addBtn");
 		ulElem = document.getElementsByTagName("ul")[0];
 	}
 
 	function addListeners() {
-		inputElem.addEventListener("change", onChange, false);
+		button.addEventListener("click", onChange, false);
 	}
 
 	function onChange(event) {
@@ -23,6 +28,9 @@ function todoMain() {
 		// ulElem.innerHTML += `<li>${inputValue}</li>`;
 		inputElem.value = "";
 
+		let inputValue2 = inputElem2.value;
+		inputElem2.value = "";
+
 		let liElem = document.createElement("li");
 
 		let checkboxElem = document.createElement("input");
@@ -30,7 +38,7 @@ function todoMain() {
 		liElem.appendChild(checkboxElem);
 
 		let textElem = document.createElement("span");
-		textElem.innerText = inputValue;
+		textElem.innerText = inputValue + " - " + inputValue2;
 		liElem.appendChild(textElem);
 
 		// liElem.innerText = inputValue;
