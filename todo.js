@@ -4,7 +4,7 @@ function todoMain() {
 	let inputElem,
 		inputElem2,
 		button,
-		ulElem;
+		selectElem;
 	getElements();
 	addListeners();
 
@@ -12,15 +12,16 @@ function todoMain() {
 		inputElem = document.getElementsByTagName("input")[0];
 		inputElem2 = document.getElementsByTagName("input")[1];
 		button = document.getElementById("addBtn");
-		ulElem = document.getElementsByTagName("ul")[0];
+		selectElem = document.getElementById("categoryFilter");
 	}
 
 	function addListeners() {
 		button.addEventListener("click", addEntry, false);
+		selectElem.addEventListener("change", filterEntries, false);
 	}
 
 	function addEntry(event) {
-		
+
 		let inputValue = inputElem.value;
 		inputElem.value = "";
 		let inputValue2 = inputElem2.value;
@@ -65,5 +66,37 @@ function todoMain() {
 		function done() {
 			trElem.classList.toggle("strike");
 		}
+	}
+
+	function filterEntries() {
+		
+		let selection = selectElem.value;
+
+		if (selection == "") {
+
+			let rows = document.getElementsByTagName("tr");
+
+			Array.from(rows).forEach((row, index) => {
+				row.style.display = "";
+			});
+
+		} else {
+
+			let rows = document.getElementsByTagName("tr");
+
+			Array.from(rows).forEach((row, index) => {
+				if (index == 0) {
+					return;
+				}
+				let category = row.getElementsByTagName("td")[2].innerText;
+				if (category == selectElem.value) {
+					row.style.display = "";
+				} else {
+					row.style.display = "none";
+				}
+			});			
+		}
+
+
 	}
 }
