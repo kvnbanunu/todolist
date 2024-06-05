@@ -1,12 +1,12 @@
 todoMain();
 
 function todoMain() {
-	let inputElem,
-		inputElem2,
-		button,
-		selectElem;
+	const DEFAULT_OPTION = "";
+	let inputElem, inputElem2, button, selectElem, todoList = [];
 	getElements();
 	addListeners();
+	load();
+	renderRows();
 
 	function getElements() {
 		inputElem = document.getElementsByTagName("input")[0];
@@ -21,12 +21,99 @@ function todoMain() {
 	}
 
 	function addEntry(event) {
-
 		let inputValue = inputElem.value;
 		inputElem.value = "";
 		let inputValue2 = inputElem2.value;
 		inputElem2.value = "";
 
+		renderRow(inputValue, inputValue2);
+
+		todoList.push(inputValue);
+
+		save();
+
+		updateSelectOptions();
+	}
+
+	function filterEntries() {
+		let selection = selectElem.value;
+
+		if (selection == DEFAULT_OPTION) {
+			let rows = document.getElementsByTagName("tr");
+
+			Array.from(rows).forEach((row, index) => {
+				row.style.display = "";
+			});
+		} else {
+			let rows = document.getElementsByTagName("tr");
+
+			Array.from(rows).forEach((row, index) => {
+				if (index == 0) {
+					return;
+				}
+				let category = row.getElementsByTagName("td")[2].innerText;
+				if (category == selectElem.value) {
+					row.style.display = "";
+				} else {
+					row.style.display = "none";
+				}
+			});
+		}
+	}
+
+	function updateSelectOptions() {
+		let options = [];
+
+		let rows = document.getElementsByTagName("tr");
+
+		Array.from(rows).forEach((row, index) => {
+			if (index == 0) {
+				return;
+			}
+			let category = row.getElementsByTagName("td")[2].innerText;
+
+			options.push(category);
+		});
+
+		let optionsSet = new Set(options)
+
+		// empty the select options
+		selectElem.innerHTML = "";
+
+		let newOptionElem = document.createElement("option");
+		newOptionElem.value = DEFAULT_OPTION;
+		newOptionElem.innerText = DEFAULT_OPTION;
+		selectElem.appendChild(newOptionElem);
+
+		
+		for (let option of optionsSet) {
+			let newOptionElem = document.createElement("option");
+			newOptionElem.value = option;
+			newOptionElem.innerText = option;
+			selectElem.appendChild(newOptionElem);
+		}
+	}
+
+	function save() {
+		let stringified = JSON.stringify(todoList);
+		localStorage.setItem("todoList", stringified);
+	}
+
+	function load() {
+		let retrieved = localStorage.getItem("todoList");
+		todoList = JSON.parse(retrieved);
+		if (todoList == null) {
+			todoList = [];
+		}
+	}
+
+	function renderRows() {
+		todoList.forEach(todo => {
+			renderRow(todo, null);
+		})
+	}
+
+	function renderRow(inputValue, inputValue2) {
 		// Add a new row
 		let table = document.getElementById("todoTable");
 		let trElem = document.createElement("tr");
@@ -58,45 +145,15 @@ function todoMain() {
 		let tdElem4 = document.createElement("td");
 		tdElem4.appendChild(spanElem);
 		trElem.appendChild(tdElem4);
-
+		
 		function deleteItem() {
 			trElem.remove();
+			updateSelectOptions();
 		}
 
 		function done() {
 			trElem.classList.toggle("strike");
 		}
-	}
-
-	function filterEntries() {
-		
-		let selection = selectElem.value;
-
-		if (selection == "") {
-
-			let rows = document.getElementsByTagName("tr");
-
-			Array.from(rows).forEach((row, index) => {
-				row.style.display = "";
-			});
-
-		} else {
-
-			let rows = document.getElementsByTagName("tr");
-
-			Array.from(rows).forEach((row, index) => {
-				if (index == 0) {
-					return;
-				}
-				let category = row.getElementsByTagName("td")[2].innerText;
-				if (category == selectElem.value) {
-					row.style.display = "";
-				} else {
-					row.style.display = "none";
-				}
-			});			
-		}
-
 
 	}
 }
