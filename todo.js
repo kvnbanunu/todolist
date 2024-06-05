@@ -6,7 +6,8 @@ function todoMain() {
 		inputElem2,
 		dateInput,
 		timeInput,
-		button,
+		addButton,
+		sortButton,
 		selectElem,
 		todoList = [];
 	getElements();
@@ -20,12 +21,14 @@ function todoMain() {
 		inputElem2 = document.getElementsByTagName("input")[1];
 		dateInput = document.getElementById("dateInput");
 		timeInput = document.getElementById("timeInput");
-		button = document.getElementById("addBtn");
+		addButton = document.getElementById("addBtn");
+		sortButton = document.getElementById("sortBtn");
 		selectElem = document.getElementById("categoryFilter");
 	}
 
 	function addListeners() {
-		button.addEventListener("click", addEntry, false);
+		addButton.addEventListener("click", addEntry, false);
+		sortButton.addEventListener("click", sortEntry, false);
 		selectElem.addEventListener("change", filterEntries, false);
 	}
 
@@ -63,41 +66,31 @@ function todoMain() {
 	function filterEntries() {
 		let selection = selectElem.value;
 
+		// Empty the table, keeping the first row
+		let trElems = document.getElementsByTagName("tr");
+		for (let i = trElems.length - 1; i > 0; i--) {
+			trElems[i].remove();
+		}
+
 		if (selection == DEFAULT_OPTION) {
-			let rows = document.getElementsByTagName("tr");
 
-			Array.from(rows).forEach((row, index) => {
-				row.style.display = "";
-			});
+			todoList.forEach( obj => renderRow(obj) );
+
+
 		} else {
-			let rows = document.getElementsByTagName("tr");
-
-			Array.from(rows).forEach((row, index) => {
-				if (index == 0) {
-					return;
+			todoList.forEach( obj => {
+				if ( obj.category == selection ) {
+					renderRow(obj);
 				}
-				let category = row.getElementsByTagName("td")[2].innerText;
-				if (category == selectElem.value) {
-					row.style.display = "";
-				} else {
-					row.style.display = "none";
-				}
-			});
+			})
 		}
 	}
 
 	function updateSelectOptions() {
 		let options = [];
 
-		let rows = document.getElementsByTagName("tr");
-
-		Array.from(rows).forEach((row, index) => {
-			if (index == 0) {
-				return;
-			}
-			let category = row.getElementsByTagName("td")[4].innerText;
-
-			options.push(category);
+		todoList.forEach((obj)=>{
+			options.push(obj.category);
 		});
 
 		let optionsSet = new Set(options);
@@ -176,6 +169,7 @@ function todoMain() {
 		// category cell
 		let tdElem3 = document.createElement("td");
 		tdElem3.innerText = inputValue2;
+		tdElem3.className = "categoryCell";
 		trElem.appendChild(tdElem3);
 
 		// delete cell
@@ -229,5 +223,22 @@ function todoMain() {
 			d = Math.floor(d / 16);
 			return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
 		});
+	}
+	
+	function sortEntry() {
+		todoList.sort((a, b)=>{
+			let aDate = Date.parse(a.date);
+			let bDate = Date.parse(b.date);
+			return aDate - bDate;
+		});
+
+		save();
+
+		let trElems = document.getElementsByTagName("tr");
+		for (let i = trElems.length-1; i > 0; i--) {
+			trElems[i].remove();
+		}
+
+		renderRows();
 	}
 }
