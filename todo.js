@@ -1,8 +1,12 @@
 todoMain();
 
 function todoMain() {
-	const DEFAULT_OPTION = "";
-	let inputElem, inputElem2, button, selectElem, todoList = [];
+	const DEFAULT_OPTION = "Choose category";
+	let inputElem,
+		inputElem2,
+		button,
+		selectElem,
+		todoList = [];
 	getElements();
 	addListeners();
 	load();
@@ -28,9 +32,11 @@ function todoMain() {
 		inputElem2.value = "";
 
 		let obj = {
+			id: _uuid(),
 			todo: inputValue,
 			category: inputValue2,
-		}
+			done: false,
+		};
 
 		renderRow(obj);
 
@@ -81,7 +87,7 @@ function todoMain() {
 			options.push(category);
 		});
 
-		let optionsSet = new Set(options)
+		let optionsSet = new Set(options);
 
 		// empty the select options
 		selectElem.innerHTML = "";
@@ -91,7 +97,6 @@ function todoMain() {
 		newOptionElem.innerText = DEFAULT_OPTION;
 		selectElem.appendChild(newOptionElem);
 
-		
 		for (let option of optionsSet) {
 			let newOptionElem = document.createElement("option");
 			newOptionElem.value = option;
@@ -114,13 +119,12 @@ function todoMain() {
 	}
 
 	function renderRows() {
-		todoList.forEach(todoObj => {
+		todoList.forEach((todoObj) => {
 			renderRow(todoObj);
-		})
+		});
 	}
 
-	function renderRow({todo: inputValue, category: inputValue2}) {
-
+	function renderRow({ todo: inputValue, category: inputValue2, id, done }) {
 		// Add a new row
 		let table = document.getElementById("todoTable");
 		let trElem = document.createElement("tr");
@@ -129,7 +133,8 @@ function todoMain() {
 		// checkbox cell
 		let checkboxElem = document.createElement("input");
 		checkboxElem.type = "checkbox";
-		checkboxElem.addEventListener("click", done, false);
+		checkboxElem.addEventListener("click", checkboxClickCallback, false);
+		checkboxElem.dataset.id = id;
 		let tdElem1 = document.createElement("td");
 		tdElem1.appendChild(checkboxElem);
 		trElem.appendChild(tdElem1);
@@ -149,18 +154,51 @@ function todoMain() {
 		spanElem.innerText = "delete";
 		spanElem.className = "material-symbols-outlined";
 		spanElem.addEventListener("click", deleteItem, false);
+		spanElem.dataset.id = id;
 		let tdElem4 = document.createElement("td");
 		tdElem4.appendChild(spanElem);
 		trElem.appendChild(tdElem4);
-		
+
+		checkboxElem.type = "checkbox";
+		checkboxElem.checked = done;
+		if (done) {
+			trElem.classList.add("strike");
+		} else {
+			trElem.classList.remove("strike");
+		}
+
 		function deleteItem() {
 			trElem.remove();
 			updateSelectOptions();
+
+			for (let i = 0; i < todoList.length; i++) {
+				if (todoList[i].id == this.dataset.id) {
+					todoList.splice(i, 1);
+				}
+			}
+			save();
 		}
 
-		function done() {
+		function checkboxClickCallback() {
 			trElem.classList.toggle("strike");
+			for (let i = 0; i < todoList.length; i++) {
+				if (todoList[i].id == this.dataset.id) {
+					todoList[i]["done"] = this.checked;
+				}
+			}
+			save();
 		}
+	}
 
+	function _uuid() {
+		var d = Date.now();
+		if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+			d += performance.now(); //use high-precision timer if available
+		}
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+			var r = (d + Math.random() * 16) % 16 | 0;
+			d = Math.floor(d / 16);
+			return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+		});
 	}
 }
