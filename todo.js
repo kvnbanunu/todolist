@@ -9,9 +9,12 @@ function todoMain() {
 		addButton,
 		sortButton,
 		selectElem,
-		todoList = [];
+		todoList = [],
+		calendar;
+
 	getElements();
 	addListeners();
+	initCalendar();
 	load();
 	renderRows();
 	updateSelectOptions();
@@ -72,24 +75,23 @@ function todoMain() {
 			trElems[i].remove();
 		}
 
+		calendar.getEvents().forEach(event=>event.remove());
+
 		if (selection == DEFAULT_OPTION) {
-
-			todoList.forEach( obj => renderRow(obj) );
-
-
+			todoList.forEach((obj) => renderRow(obj));
 		} else {
-			todoList.forEach( obj => {
-				if ( obj.category == selection ) {
+			todoList.forEach((obj) => {
+				if (obj.category == selection) {
 					renderRow(obj);
 				}
-			})
+			});
 		}
 	}
 
 	function updateSelectOptions() {
 		let options = [];
 
-		todoList.forEach((obj)=>{
+		todoList.forEach((obj) => {
 			options.push(obj.category);
 		});
 
@@ -130,7 +132,14 @@ function todoMain() {
 		});
 	}
 
-	function renderRow({ todo: inputValue, category: inputValue2, id, date, time, done }) {
+	function renderRow({
+		todo: inputValue,
+		category: inputValue2,
+		id,
+		date,
+		time,
+		done,
+	}) {
 		// Add a new row
 		let table = document.getElementById("todoTable");
 		let trElem = document.createElement("tr");
@@ -149,7 +158,7 @@ function todoMain() {
 		let dateElem = document.createElement("td");
 		let dateObj = new Date(date);
 		let formattedDate = dateObj.toLocaleString("en-CA", {
-			month:"long",
+			month: "long",
 			day: "numeric",
 			year: "numeric",
 		});
@@ -190,6 +199,12 @@ function todoMain() {
 			trElem.classList.remove("strike");
 		}
 
+		addEvent({
+			id: id,
+			title: inputValue,
+			start: date,
+		});
+
 		function deleteItem() {
 			trElem.remove();
 			updateSelectOptions();
@@ -200,6 +215,9 @@ function todoMain() {
 				}
 			}
 			save();
+
+			// Remove from calendar
+			calendar.getEventById( this.dataset.id ).remove();
 		}
 
 		function checkboxClickCallback() {
@@ -215,18 +233,24 @@ function todoMain() {
 
 	function _uuid() {
 		var d = Date.now();
-		if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+		if (
+			typeof performance !== "undefined" &&
+			typeof performance.now === "function"
+		) {
 			d += performance.now(); //use high-precision timer if available
 		}
-		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-			var r = (d + Math.random() * 16) % 16 | 0;
-			d = Math.floor(d / 16);
-			return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-		});
+		return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+			/[xy]/g,
+			function(c) {
+				var r = (d + Math.random() * 16) % 16 | 0;
+				d = Math.floor(d / 16);
+				return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+			},
+		);
 	}
-	
+
 	function sortEntry() {
-		todoList.sort((a, b)=>{
+		todoList.sort((a, b) => {
 			let aDate = Date.parse(a.date);
 			let bDate = Date.parse(b.date);
 			return aDate - bDate;
@@ -235,10 +259,33 @@ function todoMain() {
 		save();
 
 		let trElems = document.getElementsByTagName("tr");
-		for (let i = trElems.length-1; i > 0; i--) {
+		for (let i = trElems.length - 1; i > 0; i--) {
 			trElems[i].remove();
 		}
 
 		renderRows();
+	}
+
+	function initCalendar() {
+		var calendarEl = document.getElementById("calendar");
+
+		calendar = new FullCalendar.Calendar(calendarEl, {
+			initialView: "dayGridMonth",
+			initialDate: "2024-06-07",
+			headerToolbar: {
+				left: "prev,next today",
+				center: "title",
+				right: "dayGridMonth,timeGridWeek,timeGridDay",
+			},
+			events: [],
+			eventColor: "rgba(187,30,16,255)",
+		});
+
+		calendar.render();
+
+	}
+
+	function addEvent(event) {
+		calendar.addEvent( event );
 	}
 }

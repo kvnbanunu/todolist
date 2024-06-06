@@ -1,9 +1,153 @@
+.oregano-regular {
+	font-family: "Oregano", cursive;
+	font-weight: 400;
+	font-style: normal;
+}
+
+.oregano-regular-italic {
+	font-family: "Oregano", cursive;
+	font-weight: 400;
+	font-style: italic;
+}
+
 .strike {
 	text-decoration: line-through;
 }
 
-
 td {
 	border: 1px solid black;
 	padding: 5px;
+}
+
+.todo-input {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	row-gap: 1rem;
+}
+
+#todoTable {
+	margin-top: 1rem;
+}
+
+h1 {
+	color: rgba(134, 26, 34, 255);
+}
+
+body {
+	background-color: rgba(247, 242, 234, 255);
+}
+
+.todo-block {
+	border: 1px solid rgba(187, 30, 16, 255);
+	padding: 1rem;
+	border-radius: 20px;
+	color: rgba(134, 26, 34, 255);
+}
+
+/* Input fields */
+input {
+	color: rgba(134, 26, 34, 255);
+	font-family: "Oregano", cursive;
+	font-weight: 400;
+	font-style: normal;
+}
+
+:-ms-input-placeholder {
+	color: rgba(134, 26, 34, 255);
+	font-family: "Oregano", cursive;
+	font-weight: 400;
+	font-style: normal;
+}
+
+::-webkit-input-placeholder {
+	color: rgba(134, 26, 34, 255);
+	font-family: "Oregano", cursive;
+	font-weight: 400;
+	font-style: normal;
+}
+
+::placeholder {
+	color: rgba(134, 26, 34, 255);
+	font-family: "Oregano", cursive;
+	font-weight: 400;
+	font-style: normal;
+}
+
+select {
+	color: rgba(134, 26, 34, 255);
+	font-family: "Oregano", cursive;
+	font-weight: 400;
+	font-style: normal;
+}
+
+/* Pink Button */
+.pink-btn {
+	font-family: "Oregano", cursive;
+	font-weight: 400;
+	font-style: normal;
+	display: inline-block;
+	color: rgba(134, 26, 34, 255);
+	text-align: center;
+	vertical-align: middle;
+	cursor: pointer;
+	background-color: rgba(244, 205, 212, 255);
+	border: 1px solid rgba(244, 205, 212, 255);
+	padding: 0.375rem 0.75rem;
+	font-size: 1rem;
+	line-height: 1.5;
+	border-radius: 0.25rem;
+	transition:
+		color 0.15s ease-in-out,
+		background-color 0.15s ease-in-out,
+		border-color 0.15s ease-in-out,
+		box-shadow 0.15s ease-in-out;
+}
+
+.pink-btn:hover {
+	background-color: #dcb9bf;
+	border-color: #c3a4aa;
+}
+
+.pink-btn:focus {
+	outline: 0;
+	box-shadow: 0 0 0 0.2rem #f7dce1;
+}
+
+.pink-btn:active {
+	background-color: #dcb9bf;
+	border-color: #c3a4aa;
+	box-shadow: none;
+}
+
+.pink-btn:disabled {
+	opacity: 0.65;
+	cursor: not-allowed;
+}
+
+.fc .fc-button-primary {
+	color: rgba(134,26,34,255);
+	background-color: rgba(244,205,212,255) !important;
+	border-color: rgba(244,205,212,255) !important;
+}
+
+/* Media Queries */
+@media screen and (max-width: 767px) {
+	/* for mobile or small screen device */
+	.todo-calendar {
+		margin-top: 1rem;
+	}
+}
+
+@media screen and (min-width: 768px) {
+	/* for tablets or laptops or desktops */
+	.todo-grid-parent {
+		display: grid;
+		grid-template-columns: 2fr 3fr;
+		column-gap: 1rem;
+	}
+
+	#calendar {
+		position: sticky;
+		top: 0;
+	}
 }
