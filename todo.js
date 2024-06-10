@@ -10,13 +10,14 @@ function todoMain() {
 		sortButton,
 		selectElem,
 		todoList = [],
-		calendar;
+		calendar,
+        shortlistBtn;
 
 	getElements();
 	addListeners();
 	initCalendar();
 	load();
-	renderRows();
+	renderRows(todoList);
 	updateSelectOptions();
 
 	function getElements() {
@@ -27,12 +28,14 @@ function todoMain() {
 		addButton = document.getElementById("addBtn");
 		sortButton = document.getElementById("sortBtn");
 		selectElem = document.getElementById("categoryFilter");
+        shortlistBtn = document.getElementById("shortlistBtn");
 	}
 
 	function addListeners() {
 		addButton.addEventListener("click", addEntry, false);
 		sortButton.addEventListener("click", sortEntry, false);
-		selectElem.addEventListener("change", filterEntries, false);
+		selectElem.addEventListener("change", multipleFilter, false);
+        shortlistBtn.addEventListener("change", multipleFilter, false);
 	}
 
 	function addEntry(event) {
@@ -64,28 +67,6 @@ function todoMain() {
 		save();
 
 		updateSelectOptions();
-	}
-
-	function filterEntries() {
-		let selection = selectElem.value;
-
-		// Empty the table, keeping the first row
-		let trElems = document.getElementsByTagName("tr");
-		for (let i = trElems.length - 1; i > 0; i--) {
-			trElems[i].remove();
-		}
-
-		calendar.getEvents().forEach(event=>event.remove());
-
-		if (selection == DEFAULT_OPTION) {
-			todoList.forEach((obj) => renderRow(obj));
-		} else {
-			todoList.forEach((obj) => {
-				if (obj.category == selection) {
-					renderRow(obj);
-				}
-			});
-		}
 	}
 
 	function updateSelectOptions() {
@@ -126,8 +107,8 @@ function todoMain() {
 		}
 	}
 
-	function renderRows() {
-		todoList.forEach((todoObj) => {
+	function renderRows(arr) {
+		arr.forEach((todoObj) => {
 			renderRow(todoObj);
 		});
 	}
@@ -258,12 +239,9 @@ function todoMain() {
 
 		save();
 
-		let trElems = document.getElementsByTagName("tr");
-		for (let i = trElems.length - 1; i > 0; i--) {
-			trElems[i].remove();
-		}
+        clearTable();
 
-		renderRows();
+		renderRows(todoList);
 	}
 
 	function initCalendar() {
@@ -288,4 +266,44 @@ function todoMain() {
 	function addEvent(event) {
 		calendar.addEvent( event );
 	}
+    
+    function clearTable() {
+		// Empty the table, keeping the first row
+		let trElems = document.getElementsByTagName("tr");
+		for (let i = trElems.length - 1; i > 0; i--) {
+			trElems[i].remove();
+		}
+
+		calendar.getEvents().forEach(event=>event.remove());
+
+    }
+
+    function multipleFilter() {
+        clearTable();
+        
+        let selection = selectElem.value;
+
+        if (selection == DEFAULT_OPTION) {
+            if (shortlistBtn.checked) {
+                let filteredIncompleteArray = todoList.filter(obj => obj.done == false);
+                renderRows(filteredIncompleteArray);
+
+                let filteredDoneArray = todoList.filter(obj => obj.done == true);
+                renderRows(filteredDoneArray);
+            } else {
+                renderRows(todoList);
+            }
+		} else {
+            let filteredCategoryArray = todoList.filter(obj => obj.category == selection);
+            if (shortlistBtn.checked) {
+                let filteredIncompleteArray = filteredCategoryArray.filter(obj => obj.done == false);
+                renderRows(filteredIncompleteArray);
+
+                let filteredDoneArray = filteredCategoryArray.filter(obj => obj.done == true);
+                renderRows(filteredDoneArray);
+            } else {
+                renderRows(filteredCategoryArray);
+            }
+        }
+    }
 }
